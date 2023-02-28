@@ -1,0 +1,12 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    url: jdbc:postgresql://${host.db}:5432/academia
+    username: br93
+    password: root1234
+  jpa:
+    hibernate:
+      ddl-auto: update
+host:
+  db: 172.19.0.2

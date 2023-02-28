@@ -1,0 +1,53 @@
+version: '3'
+services:
+  postgresql:
+    image: postgres:latest
+    container_name: postgresql
+    ports: [54320:5432] 
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: br93
+      POSTGRES_PASSWORD: root1234
+      POSTGRES_DB: academia
+    networks:
+      - academia-digital
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    ports: [5050:80]
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: br93@git.com
+      PGADMIN_DEFAULT_PASSWORD: admin1234
+    networks:
+      - academia-digital
+    depends_on:
+      postgresql:
+        condition: service_healthy
+  spring-app:
+    build: .
+    container_name: spring-app
+    ports: [8080:8080]
+    environment:
+      host.db: postgresql
+    networks:
+      - academia-digital
+    depends_on:
+      postgresql:
+        condition: service_healthy
+
+networks:
+  academia-digital:
+    driver:
+      bridge
+
+volumes:
+  postgres-data:
+  pgadmin-data:
